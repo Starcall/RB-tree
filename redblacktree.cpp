@@ -1,36 +1,42 @@
 #include "redblacktree.h"
 #include "cassert"
 #include "iostream"
+#include "Node.h"
 
-void RedBlackTree::insert(const int value)
+
+template <class Key>
+void RedBlackTree<Key>::insert(const Key& value)
 {
-    count++;
-    if (count == 1)
+    countElements++;
+    if (countElements == 1)
     {
         root->value = value;
-        root->left = std::make_shared<Node>(Node(-1, root));
-        root->right = std::make_shared<Node>(Node(-1, root));
+        root->left = std::make_shared<Node<Key>>(Node<Key>(-1, root));
+        root->right = std::make_shared<Node<Key>>(Node<Key>(-1, root));
         return;
     }
-    std::shared_ptr<Node> curNode = root;
-    std::shared_ptr<Node> nextNode = root;
+    std::shared_ptr<Node<Key>> curNode = root;
+    std::shared_ptr<Node<Key>> nextNode = root;
     do {
         curNode = nextNode;
-        if (value >= curNode->value) {
+        if (value >= curNode->value)
+        {
             nextNode = curNode->right;
-        } else {
+        } else
+        {
             nextNode = curNode->left;
         }
     } while (nextNode != nullptr);
     curNode->value = value;
     curNode->color = NodeColor::RED;
-    curNode->left = std::make_shared<Node>(Node(-1, curNode));
-    curNode->right = std::make_shared<Node>(Node(-1, curNode));
+    curNode->left = std::make_shared<Node>(Node<Key>(-1, curNode));
+    curNode->right = std::make_shared<Node>(Node<Key>(-1, curNode));
     BalanceTree(curNode);
 
 }
 
-void RedBlackTree::BalanceTree(std::shared_ptr<Node> curNode)
+template <class Key>
+void RedBlackTree<Key>::BalanceTree(std::shared_ptr<Node<Key>> curNode)
 {
     //std::assert(curNode == fakeNode);
     if (curNode->GetParent() == root)
@@ -47,7 +53,7 @@ void RedBlackTree::BalanceTree(std::shared_ptr<Node> curNode)
     if (!curNode->GetParent()->GetParent() || curNode->GetParent()->GetParent()->left == curNode->GetParent())
     {
         //Father is left child
-        std::shared_ptr<Node> uncle;
+        std::shared_ptr<Node<Key>> uncle;
         if (!curNode->GetUncle() || curNode->GetUncle()->color == NodeColor::BLACK)
         {
             //We have Black uncle
@@ -97,9 +103,10 @@ void RedBlackTree::BalanceTree(std::shared_ptr<Node> curNode)
     root->color = NodeColor::BLACK;
 }
 
-void RedBlackTree::LeftRotate(std::shared_ptr<Node> curNode)
+template <class Key>
+void RedBlackTree<Key>::LeftRotate(std::shared_ptr<Node<Key>> curNode)
 {
-    std::shared_ptr<Node> newNode = curNode->right;
+    std::shared_ptr<Node<Key>> newNode = curNode->right;
     if (curNode == root) {
         root = newNode;
     }
@@ -117,10 +124,12 @@ void RedBlackTree::LeftRotate(std::shared_ptr<Node> curNode)
     }
 }
 
-void RedBlackTree::RightRotate(std::shared_ptr<Node> curNode)
+template <class Key>
+void RedBlackTree<Key>::RightRotate(std::shared_ptr<Node<Key>> curNode)
 {
-    std::shared_ptr<Node> newNode = curNode->left;
-    if (curNode == root) {
+    std::shared_ptr<Node<Key>> newNode = curNode->left;
+    if (curNode == root)
+    {
         root = newNode;
     }
     curNode->left = newNode->right;
@@ -137,7 +146,8 @@ void RedBlackTree::RightRotate(std::shared_ptr<Node> curNode)
     }
 }
 
-void RedBlackTree::dumpTree(std::shared_ptr<Node> curNode) const
+template <class Key>
+void RedBlackTree<Key>::dumpTree(std::shared_ptr<Node<Key>> curNode) const
 {
     if (!curNode)
         return;
@@ -146,14 +156,16 @@ void RedBlackTree::dumpTree(std::shared_ptr<Node> curNode) const
     dumpTree(curNode->right);
 }
 
-size_t RedBlackTree::size() const
+template <class Key>
+size_t RedBlackTree<Key>::size() const
 {
     return count;
 }
 
-bool RedBlackTree::find(const int32_t value) const
+template <class Key>
+typename RedBlackTree<Key>::iterator RedBlackTree<Key>::find(const Key& value) const
 {
-    std::shared_ptr<Node> curNode = root;
+    std::shared_ptr<Node<Key>> curNode = root;
     while (curNode && curNode->value != value)
     {
         if (value >= curNode->value)

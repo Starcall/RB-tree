@@ -1,69 +1,46 @@
 #pragma once
 #include <memory>
+#include "starcallset.h"
+#include "Node.h"
 
-class RedBlackTree
+
+template <class Key>
+class RedBlackTree : Set<Key>
 {
 public:
-    RedBlackTree() : count(0) {
-        root = std::make_shared<Node>();
-    };
-    void insert(const int32_t value);
-    void erase(const int32_t value) {};
-    bool find(const int32_t value) const;
-    size_t kth(const int32_t k) const {return 0;};
-    size_t size() const;
+    typedef std::iterator<std::bidirectional_iterator_tag, Key> iterator;
+    RedBlackTree() : Set<Key>()
+    {
+        root = std::make_shared<Node<Key>>();
+    }
+    ~RedBlackTree();
+    RedBlackTree& operator=(const RedBlackTree<Key>&);
+
+    virtual iterator begin() const = 0;
+    virtual iterator end() const = 0;
+    virtual iterator rbegin() const = 0;
+    virtual iterator rend() const = 0;
+
+    virtual bool empty() const override;
+    virtual size_t size() const override;
+    virtual void clear() override;
+    void insert(const Key&) override;
+    virtual void erase(const Key&) = 0;
+    virtual void swap(Set<Key>&) = 0;
+
+    virtual size_t count(const Key&) const override;
+    virtual iterator find(const Key&) const override;
 private:
-    struct Node;
-    enum NodeColor
-    {
-        RED,
-        BLACK
-    };
 
-    void BalanceTree(std::shared_ptr<Node> curNode);
-    struct Node
-    {
-        Node() : color(NodeColor::BLACK), left(nullptr), right(nullptr), value(0)
-        {
-        }
-        Node(const int32_t value, std::shared_ptr<Node> parent) : Node()
-        {
-            this->value = value;
-            this->parent = parent;
-        }
-        Node(const int32_t value, std::shared_ptr<Node> parent, NodeColor color) : Node(value, parent)
-        {
-            this->color = color;
-        }
-        std::shared_ptr<Node> GetUncle() {
-            if (GetParent() != nullptr)
-            {
-                if (GetParent()->GetParent() != nullptr) {
-                    if (GetParent()->GetParent()->left == GetParent()) {
-                        return GetParent()->GetParent()->right;
-                    } else {
-                        return GetParent()->GetParent()->left;
-                    }
-                }
-            }
-            return nullptr;
-        }
-        std::shared_ptr<Node> GetParent() {
-            return parent.lock();
-        }
-        std::shared_ptr<Node> left, right;// parent;
-        std::weak_ptr<Node> parent;
-        NodeColor color;
-        int32_t value;
-    };
+    void BalanceTree(std::shared_ptr<Node<Key>> curNode);
 
+    std::shared_ptr<Node<Key>> root;
 
-    size_t count;
-    std::shared_ptr<Node> root;
+    void LeftRotate(std::shared_ptr<Node<Key>> curNode);
+    void RightRotate(std::shared_ptr<Node<Key>> curNode);
 
-    void LeftRotate(std::shared_ptr<Node> curNode);
-    void RightRotate(std::shared_ptr<Node> curNode);
+    void dumpTree(std::shared_ptr<Node<Key>> curNode) const;
 
-    void dumpTree(std::shared_ptr<Node> curNode) const;
+    size_t countElements;
 
 };

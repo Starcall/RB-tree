@@ -6,6 +6,7 @@
 
 int main()
 {
+
     for (size_t sz = 10; sz < 200000; sz++) {
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
         std::vector<int32_t> data;
